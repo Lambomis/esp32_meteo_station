@@ -17,6 +17,18 @@ static void my_disp_flush(lv_display_t *display, const lv_area_t *area, uint8_t 
     lv_disp_flush_ready(display);
 }
 
+void displayUpdateWeather(QueueHandle_t xQueueMeteo) {
+    WeatherData data;
+    if (xQueueReceive(xQueueMeteo, &data, 0) == pdPASS) {
+        return;
+        // Aggiorna la visualizzazione con i nuovi dati meteo
+        // Esempio: crea una label e mostra la temperatura attuale
+        //TODO aggiornare interfaccia
+        // lv_label_set_text_fmt(label, "Temp: %.1f C\nFeels like: %.1f C\nHumidity: %.1f%%\nCondition: %s",
+        //                       data.today.tempC, data.today.tempFeelsLike, data.today.humidity, data.today.condition);
+    }
+}
+
 static void displayTask(void* pvParameters)
 {
     QueueHandle_t queue = (QueueHandle_t) pvParameters;
@@ -40,16 +52,4 @@ void displayManagerInit(QueueHandle_t xQueueMeteo){
     disp = lv_tft_espi_create(TFT_HOR_RES, TFT_VER_RES, draw_buf, sizeof(draw_buf));
 
     xTaskCreate(displayTask, "DisplayTask", 4096, (void*)xQueueMeteo, 5, NULL);
-}
-
-void displayUpdateWeather(QueueHandle_t xQueueMeteo) {
-    WeatherData data;
-    if (xQueueReceive(xQueueMeteo, &data, 0) == pdPASS) {
-        return;
-        // Aggiorna la visualizzazione con i nuovi dati meteo
-        // Esempio: crea una label e mostra la temperatura attuale
-        //TODO aggiornare interfaccia
-        // lv_label_set_text_fmt(label, "Temp: %.1f C\nFeels like: %.1f C\nHumidity: %.1f%%\nCondition: %s",
-        //                       data.today.tempC, data.today.tempFeelsLike, data.today.humidity, data.today.condition);
-    }
 }

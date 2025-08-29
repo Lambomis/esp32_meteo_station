@@ -1,20 +1,21 @@
+#include "data_types.h"
 #include "weather_manager.h"
 #include "display_manager.h"
-#include "data_types.h"
 #include <freertos/queue.h>
 
+QueueHandle_t xQueueMeteo;
 
 void setup()
 {
-    Serial.begin(115200);
-    xQueueMeteo = xQueueCreate(5, sizeof(WeatherData));
-    if (xQueueMeteo == NULL) {
-      Serial.println("Errore creazione queue!");
-      return;
-    }
+  Serial.begin(115200);
+  xQueueMeteo = xQueueCreate(5, sizeof(WeatherData));
+  if (xQueueMeteo == NULL) {
+    Serial.println("Errore creazione queue!");
+    return;
+  }
 
-    weatherInit(xQueueMeteo);
-    // displayManagerInit(xQueueMeteo);
+  weatherInit(xQueueMeteo);
+  // displayManagerInit(xQueueMeteo);
 }
 
 void loop()
@@ -30,15 +31,14 @@ void loop()
         Serial.printf("Umidità: %.1f%%, Vento: %.1f km/h, Pressione: %.1f mb, Visibilità: %.1f km\n",
                       data.today.humidity, data.today.windKph,
                       data.today.pressureMb, data.today.visKm);
-        Serial.printf("Condizione: %s\n", data.today.condition);
+        Serial.printf("Condizione: %d\n", data.today.weathercode);
 
         Serial.println("--- Prossimi 4 giorni ---");
         for (int i = 0; i < 4; i++) {
-            Serial.printf("Giorno %d: Max %.1f°C, Min %.1f°C, Umidità %.1f%%, Condizione: %s\n",
+            Serial.printf("Giorno %d: Max %.1f°C, Min %.1f°C, Umidità %.1f%%, Condizione: %d\n",
                           i+1, data.nextDays[i].tempMax,
-                          data.nextDays[i].tempMin,
                           data.nextDays[i].humidity,
-                          data.nextDays[i].condition);
+                          data.nextDays[i].weathercode);
         }
     }
     vTaskDelay(pdMS_TO_TICKS(1000));

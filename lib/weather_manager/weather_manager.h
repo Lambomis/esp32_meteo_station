@@ -9,6 +9,8 @@
 #include "data_types.h"
 #include "secrets.h"
 
+extern String url;
+
 // --- Variabili globali (visibili agli altri moduli) --- //
 extern QueueHandle_t xQueueMeteo;
 

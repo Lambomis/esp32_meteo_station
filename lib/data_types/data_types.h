@@ -9,14 +9,13 @@ typedef struct {
     float windKph;        // Vento km/h
     float pressureMb;     // Pressione in mbar
     float visKm;          // Visibilità in km
-    char condition[64];   // Testo condizione (es: "Partly cloudy")
+    int weathercode;   // Codice stato meteo
 } TodayWeather;
 
 typedef struct {
     float tempMax;
-    float tempMin;
     float humidity;
-    char condition[32];
+    int weathercode;
 } ForecastWeather;
 
 typedef struct {
