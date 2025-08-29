@@ -1,23 +1,45 @@
-#include <main.h>
+#include "weather_manager.h"
+#include "display_manager.h"
+#include "data_types.h"
+#include <freertos/queue.h>
 
 
 void setup()
 {
-    lv_init();
-    lv_tick_set_cb(my_tick);
-    tft.begin();
-    tft.setRotation(1);
+    Serial.begin(115200);
+    xQueueMeteo = xQueueCreate(5, sizeof(WeatherData));
+    if (xQueueMeteo == NULL) {
+      Serial.println("Errore creazione queue!");
+      return;
+    }
 
-    disp = lv_tft_espi_create(TFT_HOR_RES, TFT_VER_RES, draw_buf, sizeof(draw_buf));
-
-    // esempio: label
-    lv_obj_t *label = lv_label_create(lv_screen_active());
-    lv_label_set_text(label, "Hello ESP32 + LVGL 9.3!");
-    lv_obj_center(label);
+    weatherInit(xQueueMeteo);
+    // displayManagerInit(xQueueMeteo);
 }
 
 void loop()
 {
-    lv_timer_handler(); /* let the GUI do its work */
-    delay(5); /* let this time pass */
+  WeatherData data;
+
+    // Controllo se ci sono nuovi dati nella queue
+    if (xQueueReceive(xQueueMeteo, &data, pdMS_TO_TICKS(1000)) == pdPASS) {
+        Serial.println("=== Meteo Oggi ===");
+        Serial.printf("Temp: %.1f°C, Feels like: %.1f°C, Max: %.1f°C, Min: %.1f°C\n",
+                      data.today.tempC, data.today.tempFeelsLike,
+                      data.today.tempMax, data.today.tempMin);
+        Serial.printf("Umidità: %.1f%%, Vento: %.1f km/h, Pressione: %.1f mb, Visibilità: %.1f km\n",
+                      data.today.humidity, data.today.windKph,
+                      data.today.pressureMb, data.today.visKm);
+        Serial.printf("Condizione: %s\n", data.today.condition);
+
+        Serial.println("--- Prossimi 4 giorni ---");
+        for (int i = 0; i < 4; i++) {
+            Serial.printf("Giorno %d: Max %.1f°C, Min %.1f°C, Umidità %.1f%%, Condizione: %s\n",
+                          i+1, data.nextDays[i].tempMax,
+                          data.nextDays[i].tempMin,
+                          data.nextDays[i].humidity,
+                          data.nextDays[i].condition);
+        }
+    }
+    vTaskDelay(pdMS_TO_TICKS(1000));
 }

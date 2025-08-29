@@ -1,18 +1,12 @@
 #include "weather_manager.h"
-#define WIFI_SSID "your_SSID"
-#define WIFI_PASSWORD "your_PASSWORD"
-#define LATITUDE 45.4642
-#define LONGITUDE 9.1900
 
-void weatherInit() {
+void weatherInit(QueueHandle_t xQueueMeteo) {
     WiFi.begin("YOUR_SSID", "YOUR_PASSWORD");
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
     Serial.println("Wi-Fi connesso");
-
-    xQueueMeteo = xQueueCreate(5, sizeof(WeatherData));
 
     xTaskCreate(weatherTask, "WeatherTask", 8192, NULL, 5, NULL);
 }
