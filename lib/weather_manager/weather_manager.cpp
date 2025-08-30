@@ -4,6 +4,50 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 3600;
 const int   daylightOffset_sec = 3600;
 
+WeatherIcon getWeatherIcon(int code, bool isDay) {
+    switch(code) {
+        case 0: case 1: 
+            return (WeatherIcon){ isDay ? &img_icon_sereno : &img_icon_sereno_notte,
+                                  isDay ? "Soleggiato" : "Sereno notte" };
+        case 2: 
+            return (WeatherIcon){ isDay ? &img_icon_parzialmente_nuvoloso : &img_icon_parzialmente_nuvoloso_notte,
+                                  "Parzialmente nuvoloso" };
+        case 3: 
+            return (WeatherIcon){ &img_icon_coperto, "Coperto" };
+        case 45: case 48: 
+            return (WeatherIcon){ isDay ? &img_icon_nebbia : &img_icon_nebbia_notte,
+                                  "Nebbia" };
+        case 51: case 53: case 55: 
+            return (WeatherIcon){ &img_icon_pioviggine, "Pioviggine" };
+        case 56: case 57: 
+            return (WeatherIcon){ &img_icon_pioggia_congelante, "Pioggia congelante" };
+        case 61: case 63: case 65: 
+            return (WeatherIcon){ &img_icon_pioggia, "Pioggia" };
+        case 66: case 67: 
+            return (WeatherIcon){ &img_icon_pioggia_congelante, "Pioggia congelante" };
+        case 71: case 73: case 75: 
+            return (WeatherIcon){ &img_icon_neve, "Neve" };
+        case 77: 
+            return (WeatherIcon){ &img_icon_granelli_neve, "Neve a grani" };
+        case 80: case 81: case 82: case 85: case 86: 
+            return (WeatherIcon){ &img_icon_pioggia, "Rovesci" };
+        case 95: 
+            return (WeatherIcon){ &img_icon_temporale, "Temporale" };
+        case 96: case 99: 
+            return (WeatherIcon){ &img_icon_temporale_grandine, "Temporale con grandine" };
+        default: 
+            return (WeatherIcon){ &img_icon_sconosciuto, "Sconosciuto" };
+    }
+}
+
+bool isDaytime() {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) return true;
+    int hour = timeinfo.tm_hour;
+    return hour >= 6 && hour < 18;
+}
+
+
 WeatherData getWeatherData_openmeteo() {
     WeatherData data = {0};
     HTTPClient http;
@@ -18,6 +62,7 @@ WeatherData getWeatherData_openmeteo() {
     if (httpCode == HTTP_CODE_OK) {
 
         String payload = http.getString();
+        Serial.println(payload);
 
         DynamicJsonDocument doc(16*1024);
         deserializeJson(doc, payload);
@@ -29,7 +74,8 @@ WeatherData getWeatherData_openmeteo() {
         data.today.tempMax = doc["daily"]["temperature_2m_max"][0];
         data.today.tempMin = doc["daily"]["temperature_2m_min"][0];
         data.today.windKph = doc["current_weather"]["windspeed"];
-        data.today.weathercode = doc["daily"]["weathercode"][0];
+        data.today.weatherIcon = getWeatherIcon(doc["current_weather"]["weathercode"], isDaytime());
+
         
         float sumHumidity = 0;
         for (int i = 0; i < 24; i++) sumHumidity += doc["hourly"]["relativehumidity_2m"][i].as<float>();
@@ -38,7 +84,7 @@ WeatherData getWeatherData_openmeteo() {
         // --- Dati successivi 4 giorni ---
         for (int i = 1; i <= 4; i++) {
             data.nextDays[i-1].tempMax    = doc["daily"]["temperature_2m_max"][i].as<float>();
-            data.nextDays[i-1].weathercode= doc["daily"]["weathercode"][i].as<int>();
+            data.nextDays[i-1].weatherIcon = getWeatherIcon(doc["daily"]["weathercode"][i].as<int>(), true);
 
             // umidità media giorno i dalle 24 ore corrispondenti
             int startHour = i * 24;

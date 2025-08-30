@@ -1,5 +1,11 @@
 #pragma once
 // --- Strutture dati --- //
+
+typedef struct {
+    const void* icon;
+    const char* description;
+} WeatherIcon;
+
 typedef struct {
     float tempC;          // Temperatura attuale
     float tempFeelsLike;  // Temperatura percepita
@@ -9,13 +15,13 @@ typedef struct {
     float windKph;        // Vento km/h
     float pressureMb;     // Pressione in mbar
     float visKm;          // Visibilità in km
-    int weathercode;   // Codice stato meteo
+    WeatherIcon weatherIcon;   // stato meteo
 } TodayWeather;
 
 typedef struct {
     float tempMax;
     float humidity;
-    int weathercode;
+    WeatherIcon weatherIcon;
 } ForecastWeather;
 
 typedef struct {

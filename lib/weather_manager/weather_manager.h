@@ -8,6 +8,8 @@
 #include <ArduinoJson.h>
 #include "data_types.h"
 #include "secrets.h"
+#include "images.h"
+#include "secrets.h"
 
 // --- Variabili globali (visibili agli altri moduli) --- //
 extern QueueHandle_t xQueueMeteo;

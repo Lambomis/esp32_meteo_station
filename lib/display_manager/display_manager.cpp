@@ -4,25 +4,6 @@ TFT_eSPI tft = TFT_eSPI();
 static lv_disp_t *disp = nullptr;
 static uint32_t* draw_buf = nullptr;
 
-const void* getWeatherIcon(int code, bool isDay) {
-    switch(code) {
-        case 0: case 1: return isDay ? &img_icon_sereno : &img_icon_sereno_notte;
-        case 2: return isDay ? &img_icon_parzialmente_nuvoloso : &img_icon_parzialmente_nuvoloso_notte;
-        case 3: return &img_icon_coperto;
-        case 45: case 48: return isDay ? &img_icon_nebbia : &img_icon_nebbia_notte;
-        case 51: case 53: case 55: return &img_icon_pioviggine;
-        case 56: case 57: return &img_icon_pioggia_congelante;
-        case 61: case 63: case 65: return &img_icon_pioggia;
-        case 66: case 67: return &img_icon_pioggia_congelante;
-        case 71: case 73: case 75: return &img_icon_neve;
-        case 77: return &img_icon_granelli_neve;
-        case 80: case 81: case 82: case 85: case 86: return &img_icon_pioggia;
-        case 95: return &img_icon_temporale;
-        case 96: case 99: return &img_icon_temporale_grandine;
-        default: return &img_icon_sconosciuto;
-    }
-}
-
 static void my_disp_flush(lv_display_t *display, const lv_area_t *area, uint8_t *color_p)
 {
     uint32_t w = lv_area_get_width(area);
@@ -53,8 +34,8 @@ void displayUpdateDateTime(){
         lv_label_set_text(objects.label_data, dateStr);
 
         // Aggiorna i prossimi 4 giorni
-        lv_obj_t* labels[] = {objects.label_day_left_2, objects.label_day_left_1,
-                              objects.label_day_right_1, objects.label_day_right_2};
+        static lv_obj_t* labels[] = {objects.label_day_left_2, objects.label_day_left_1,
+                        objects.label_day_right_1, objects.label_day_right_2};
 
         time_t now = mktime(&timeinfo); // timestamp di oggi
         for (int i = 0; i < 4; i++) {
@@ -69,11 +50,42 @@ void displayUpdateDateTime(){
     }
 }
 
+void setLabelFloat(lv_obj_t* label, float value, const char* fmt = "%.1f") {
+    static char buf[32];
+    snprintf(buf, sizeof(buf), fmt, value);
+    lv_label_set_text(label, buf);
+}
+
 
 void displayUpdateWeather(QueueHandle_t xQueueMeteo) {
     static WeatherData data;
     if (xQueueReceive(xQueueMeteo, &data, 0) == pdPASS) {
         lv_label_set_text(objects.label_luogo, CITY);
+        lv_img_set_src(objects.icon_meteo_today, data.today.weatherIcon.icon);
+        lv_label_set_text(objects.labl_meteo_today, data.today.weatherIcon.description);
+        setLabelFloat(objects.label_temp_current, data.today.tempC, "%.1f°C");
+        setLabelFloat(objects.label_tempt_current_perc, data.today.tempFeelsLike, "%.1f°C");
+        setLabelFloat(objects.label_temp_max, data.today.tempMax, "%.1f°C");
+        setLabelFloat(objects.label_temp_min, data.today.tempMin, "%.1f°C");
+        setLabelFloat(objects.label_umid_current, data.today.humidity, "%.0f%%");
+        setLabelFloat(objects.label_vento_value, data.today.windKph, "%.1f km/h");
+        setLabelFloat(objects.label_pressione_value, data.today.pressureMb, "%.1f hPa");
+        setLabelFloat(objects.label_visibilita_value, data.today.visKm, "%.1f km");
+
+        static lv_obj_t* labels_umid[] = {objects.umidita_day_left_2, objects.umidita_day_left_1,
+                                        objects.umidita_day_right_1, objects.umidita_day_right_2};
+
+        static lv_obj_t* labels_temp[] = {objects.temperatura_day_left_2, objects.temperatura_day_left_1,
+                                        objects.temperatura_day_right_1, objects.temperatura_day_right_2};
+
+        static lv_obj_t* icons_status[] = {objects.icon_day_left_2, objects.icon_day_left_1,
+                                            objects.icon_day_right_1, objects.icon_day_right_2};
+
+        for (int i = 0; i < 4; i++){
+            setLabelFloat(labels_umid[i], data.nextDays[i].humidity,"%.0f%%");
+            setLabelFloat(labels_temp[i], data.nextDays[i].tempMax, "%.0f°");
+            lv_img_set_src(icons_status[i], data.nextDays[i].weatherIcon.icon);
+        }
     }
 }
 

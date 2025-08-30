@@ -75,9 +75,9 @@ void create_screen_main() {
                     lv_label_set_text(obj, "31");
                 }
                 {
-                    // umidità_day_left_2
+                    // umidita_day_left_2
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.umidit__day_left_2 = obj;
+                    objects.umidita_day_left_2 = obj;
                     lv_obj_set_pos(obj, 4, 47);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff0060ff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -103,9 +103,9 @@ void create_screen_main() {
                     lv_image_set_scale(obj, 100);
                 }
                 {
-                    // umidità_day_left_1
+                    // umidita_day_left_1
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.umidit__day_left_1 = obj;
+                    objects.umidita_day_left_1 = obj;
                     lv_obj_set_pos(obj, 59, 47);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff0060ff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -131,9 +131,9 @@ void create_screen_main() {
                     lv_image_set_scale(obj, 100);
                 }
                 {
-                    // umidità_day_center_1
+                    // umidita_day_right_1
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.umidit__day_center_1 = obj;
+                    objects.umidita_day_right_1 = obj;
                     lv_obj_set_pos(obj, 117, 47);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff0060ff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -141,9 +141,9 @@ void create_screen_main() {
                     lv_label_set_text(obj, "40%");
                 }
                 {
-                    // temperatura_day_center_1
+                    // temperatura_day_right_1
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.temperatura_day_center_1 = obj;
+                    objects.temperatura_day_right_1 = obj;
                     lv_obj_set_pos(obj, 119, 62);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -169,9 +169,9 @@ void create_screen_main() {
                     lv_image_set_scale(obj, 100);
                 }
                 {
-                    // umidità_day_right_2
+                    // umidita_day_right_2
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.umidit__day_right_2 = obj;
+                    objects.umidita_day_right_2 = obj;
                     lv_obj_set_pos(obj, 170, 47);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xff0060ff), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -226,7 +226,7 @@ void create_screen_main() {
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "Temp. Percepita:");
+                    lv_label_set_text(obj, "Percepita:");
                 }
                 {
                     // label_tempt_current_perc
@@ -408,8 +408,8 @@ void create_screen_main() {
                     // label_vento_value
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_vento_value = obj;
-                    lv_obj_set_pos(obj, 40, 24);
-                    lv_obj_set_size(obj, 59, LV_SIZE_CONTENT);
+                    lv_obj_set_pos(obj, 50, 24);
+                    lv_obj_set_size(obj, 49, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "000.0 km/h");
@@ -436,8 +436,8 @@ void create_screen_main() {
                     // label_pressione_value
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_pressione_value = obj;
-                    lv_obj_set_pos(obj, 55, 39);
-                    lv_obj_set_size(obj, 43, LV_SIZE_CONTENT);
+                    lv_obj_set_pos(obj, 58, 39);
+                    lv_obj_set_size(obj, 40, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "0000 hPa");
@@ -456,8 +456,8 @@ void create_screen_main() {
                     // label_visibilita_value
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_visibilita_value = obj;
-                    lv_obj_set_pos(obj, 55, 55);
-                    lv_obj_set_size(obj, 43, LV_SIZE_CONTENT);
+                    lv_obj_set_pos(obj, 58, 55);
+                    lv_obj_set_size(obj, 37, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "00.0 km");
@@ -528,19 +528,18 @@ void create_screen_main() {
                     // labl_meteo_today
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.labl_meteo_today = obj;
-                    lv_obj_set_pos(obj, 148, 52);
-                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-                    lv_label_set_long_mode(obj, LV_LABEL_LONG_SCROLL);
+                    lv_obj_set_pos(obj, 110, 52);
+                    lv_obj_set_size(obj, 90, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "Soleggiato");
                 }
                 {
                     // icon_meteo_today
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.icon_meteo_today = obj;
-                    lv_obj_set_pos(obj, 144, -7);
+                    lv_obj_set_pos(obj, 141, -7);
                     lv_obj_set_size(obj, 63, 60);
                     lv_image_set_src(obj, &img_icon_sereno);
                     lv_image_set_scale(obj, 200);
