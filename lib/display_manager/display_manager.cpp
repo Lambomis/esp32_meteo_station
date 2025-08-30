@@ -1,8 +1,8 @@
 #include "display_manager.h"
 
 TFT_eSPI tft = TFT_eSPI();
-uint32_t draw_buf[DRAW_BUF_SIZE / 4];
-static lv_disp_t *disp;
+static lv_disp_t *disp = nullptr;
+static uint32_t* draw_buf = nullptr;
 
 static void my_disp_flush(lv_display_t *display, const lv_area_t *area, uint8_t *color_p)
 {
@@ -18,7 +18,7 @@ static void my_disp_flush(lv_display_t *display, const lv_area_t *area, uint8_t 
 }
 
 void displayUpdateWeather(QueueHandle_t xQueueMeteo) {
-    WeatherData data;
+    static WeatherData data;
     if (xQueueReceive(xQueueMeteo, &data, 0) == pdPASS) {
         return;
         // Aggiorna la visualizzazione con i nuovi dati meteo
@@ -35,7 +35,7 @@ static void displayTask(void* pvParameters)
     while(1){
         lv_timer_handler();
         displayUpdateWeather(queue);
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(30));
     }
 }
 
@@ -49,7 +49,13 @@ void displayManagerInit(QueueHandle_t xQueueMeteo){
     lv_tick_set_cb(my_tick);
     tft.begin();
     tft.setRotation(1);
-    disp = lv_tft_espi_create(TFT_HOR_RES, TFT_VER_RES, draw_buf, sizeof(draw_buf));
+    draw_buf = (uint32_t*) heap_caps_malloc(DRAW_BUF_SIZE / 4 * sizeof(uint32_t), MALLOC_CAP_DMA);
+    if (!draw_buf) {
+        Serial.println("Errore allocazione buffer LVGL!");
+        return;
+    }
+    disp = lv_tft_espi_create(TFT_HOR_RES, TFT_VER_RES, draw_buf, DRAW_BUF_SIZE / 4 * sizeof(uint32_t));
+    ui_init();
 
-    xTaskCreate(displayTask, "DisplayTask", 4096, (void*)xQueueMeteo, 5, NULL);
+    xTaskCreate(displayTask, "DisplayTask", 20480, (void*)xQueueMeteo, 5, NULL);
 }

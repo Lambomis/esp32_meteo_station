@@ -1,7 +1,7 @@
 #ifndef EEZ_LVGL_UI_IMAGES_H
 #define EEZ_LVGL_UI_IMAGES_H
 
-#include <lvgl/lvgl.h>
+#include <lvgl.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,9 +9,9 @@ extern "C" {
 
 extern const lv_img_dsc_t img_icon_location;
 extern const lv_img_dsc_t img_icon_sun;
-extern const lv_img_dsc_t img_icon_moon;
+extern const lv_img_dsc_t img_icon_nebbia;
 extern const lv_img_dsc_t img_icon_sun_cloud;
-extern const lv_img_dsc_t img_icon_moon_cloud;
+extern const lv_img_dsc_t img_icon_nebbia_cloud;
 extern const lv_img_dsc_t img_icon_temp;
 extern const lv_img_dsc_t img_icon_arrow_up;
 extern const lv_img_dsc_t img_icon_arrow_down;
