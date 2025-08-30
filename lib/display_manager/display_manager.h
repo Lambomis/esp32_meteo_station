@@ -6,6 +6,8 @@
 #include <freertos/task.h>
 #include "data_types.h"
 #include "ui.h"
+#include "images.h"
+#include "secrets.h"
 
 // Risoluzioni schermo
 #define TFT_HOR_RES   240

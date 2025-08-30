@@ -90,7 +90,7 @@ void create_screen_main() {
                     objects.icon_day_left_2 = obj;
                     lv_obj_set_pos(obj, 2, 14);
                     lv_obj_set_size(obj, 31, 30);
-                    lv_image_set_src(obj, &img_icon_sun_cloud);
+                    lv_image_set_src(obj, &img_icon_parzialmente_nuvoloso);
                     lv_image_set_scale(obj, 100);
                 }
                 {
@@ -99,7 +99,7 @@ void create_screen_main() {
                     objects.icon_day_left_1 = obj;
                     lv_obj_set_pos(obj, 57, 14);
                     lv_obj_set_size(obj, 31, 30);
-                    lv_image_set_src(obj, &img_icon_cloud);
+                    lv_image_set_src(obj, &img_icon_coperto);
                     lv_image_set_scale(obj, 100);
                 }
                 {
@@ -127,7 +127,7 @@ void create_screen_main() {
                     objects.icon_day_right_1 = obj;
                     lv_obj_set_pos(obj, 114, 14);
                     lv_obj_set_size(obj, 31, 30);
-                    lv_image_set_src(obj, &img_icon_cloud_black);
+                    lv_image_set_src(obj, &img_icon_temporale);
                     lv_image_set_scale(obj, 100);
                 }
                 {
@@ -165,7 +165,7 @@ void create_screen_main() {
                     objects.icon_day_right_2 = obj;
                     lv_obj_set_pos(obj, 167, 14);
                     lv_obj_set_size(obj, 31, 30);
-                    lv_image_set_src(obj, &img_icon_rain);
+                    lv_image_set_src(obj, &img_icon_pioviggine);
                     lv_image_set_scale(obj, 100);
                 }
                 {
@@ -542,7 +542,7 @@ void create_screen_main() {
                     objects.icon_meteo_today = obj;
                     lv_obj_set_pos(obj, 144, -7);
                     lv_obj_set_size(obj, 63, 60);
-                    lv_image_set_src(obj, &img_icon_sun);
+                    lv_image_set_src(obj, &img_icon_sereno);
                     lv_image_set_scale(obj, 200);
                 }
                 {

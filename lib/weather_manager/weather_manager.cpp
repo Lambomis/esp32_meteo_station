@@ -1,5 +1,9 @@
 #include "weather_manager.h"
 
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 3600;
+const int   daylightOffset_sec = 3600;
+
 WeatherData getWeatherData_openmeteo() {
     WeatherData data = {0};
     HTTPClient http;
@@ -103,6 +107,7 @@ void weatherInit(QueueHandle_t xQueueMeteo) {
         Serial.print(".");
     }
     Serial.println("Wi-Fi connesso");
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
     xTaskCreate(weatherTask, "WeatherTask", 8192, NULL, 5, NULL);
 }
