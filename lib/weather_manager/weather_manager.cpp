@@ -113,7 +113,6 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
     if (httpCode == HTTP_CODE_OK) {
 
         String payload = http.getString();
-        Serial.println(payload);
 
         DynamicJsonDocument doc(8*1024);
         deserializeJson(doc, payload);

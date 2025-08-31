@@ -528,10 +528,10 @@ void create_screen_main() {
                     // labl_meteo_today
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.labl_meteo_today = obj;
-                    lv_obj_set_pos(obj, 110, 52);
-                    lv_obj_set_size(obj, 90, LV_SIZE_CONTENT);
+                    lv_obj_set_pos(obj, 107, 52);
+                    lv_obj_set_size(obj, 96, 17);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "Soleggiato");
                 }
@@ -539,8 +539,8 @@ void create_screen_main() {
                     // icon_meteo_today
                     lv_obj_t *obj = lv_image_create(parent_obj);
                     objects.icon_meteo_today = obj;
-                    lv_obj_set_pos(obj, 141, -7);
-                    lv_obj_set_size(obj, 63, 60);
+                    lv_obj_set_pos(obj, 150, -7);
+                    lv_obj_set_size(obj, 60, 59);
                     lv_image_set_src(obj, &img_icon_sereno);
                     lv_image_set_scale(obj, 200);
                 }
