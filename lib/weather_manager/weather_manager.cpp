@@ -62,7 +62,6 @@ WeatherData getWeatherData_openmeteo() {
     if (httpCode == HTTP_CODE_OK) {
 
         String payload = http.getString();
-        Serial.println(payload);
 
         DynamicJsonDocument doc(16*1024);
         deserializeJson(doc, payload);
@@ -114,6 +113,7 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
     if (httpCode == HTTP_CODE_OK) {
 
         String payload = http.getString();
+        Serial.println(payload);
 
         DynamicJsonDocument doc(8*1024);
         deserializeJson(doc, payload);
@@ -128,7 +128,7 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
     return data;
 }
 
-void getWeatherData() {
+void getWeatherData(QueueHandle_t xQueueMeteo) {
     if (WiFi.status() != WL_CONNECTED) return;
     WeatherData data = {0};
     data = getWeatherData_openmeteo();
@@ -140,9 +140,10 @@ void getWeatherData() {
 }
 
 void weatherTask(void *pvParameters) {
+    QueueHandle_t xQueue = (QueueHandle_t) pvParameters;
     for (;;) {
-        getWeatherData();
-        vTaskDelay(pdMS_TO_TICKS(600000)); // aggiorna ogni 10 minuti
+        getWeatherData(xQueue);
+        vTaskDelay(pdMS_TO_TICKS(600000));
     }
 }
 
@@ -155,6 +156,6 @@ void weatherInit(QueueHandle_t xQueueMeteo) {
     Serial.println("Wi-Fi connesso");
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
-    xTaskCreate(weatherTask, "WeatherTask", 8192, NULL, 5, NULL);
+    xTaskCreate(weatherTask, "WeatherTask", 8192, (void*)xQueueMeteo, 5, NULL);
 }
 

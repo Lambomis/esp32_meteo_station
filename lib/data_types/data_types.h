@@ -28,3 +28,8 @@ typedef struct {
     TodayWeather today;
     ForecastWeather nextDays[4]; // Previsioni 4 giorni
 } WeatherData;
+
+typedef struct {
+    float umid;
+    float temp;
+} DHTData;

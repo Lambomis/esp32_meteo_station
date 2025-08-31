@@ -57,20 +57,21 @@ void setLabelFloat(lv_obj_t* label, float value, const char* fmt = "%.1f") {
 }
 
 
-void displayUpdateWeather(QueueHandle_t xQueueMeteo) {
-    static WeatherData data;
-    if (xQueueReceive(xQueueMeteo, &data, 0) == pdPASS) {
+void displayUpdateWeather(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT) {
+    static WeatherData data_meteo;
+    static DHTData data_dht;
+    if (xQueueReceive(xQueueMeteo, &data_meteo, 0) == pdPASS) {
         lv_label_set_text(objects.label_luogo, CITY);
-        lv_img_set_src(objects.icon_meteo_today, data.today.weatherIcon.icon);
-        lv_label_set_text(objects.labl_meteo_today, data.today.weatherIcon.description);
-        setLabelFloat(objects.label_temp_current, data.today.tempC, "%.1f°C");
-        setLabelFloat(objects.label_tempt_current_perc, data.today.tempFeelsLike, "%.1f°C");
-        setLabelFloat(objects.label_temp_max, data.today.tempMax, "%.1f°C");
-        setLabelFloat(objects.label_temp_min, data.today.tempMin, "%.1f°C");
-        setLabelFloat(objects.label_umid_current, data.today.humidity, "%.0f%%");
-        setLabelFloat(objects.label_vento_value, data.today.windKph, "%.1f km/h");
-        setLabelFloat(objects.label_pressione_value, data.today.pressureMb, "%.1f hPa");
-        setLabelFloat(objects.label_visibilita_value, data.today.visKm, "%.1f km");
+        lv_img_set_src(objects.icon_meteo_today, data_meteo.today.weatherIcon.icon);
+        lv_label_set_text(objects.labl_meteo_today, data_meteo.today.weatherIcon.description);
+        setLabelFloat(objects.label_temp_current, data_meteo.today.tempC, "%.1f°C");
+        setLabelFloat(objects.label_tempt_current_perc, data_meteo.today.tempFeelsLike, "%.1f°C");
+        setLabelFloat(objects.label_temp_max, data_meteo.today.tempMax, "%.1f°C");
+        setLabelFloat(objects.label_temp_min, data_meteo.today.tempMin, "%.1f°C");
+        setLabelFloat(objects.label_umid_current, data_meteo.today.humidity, "%.0f%%");
+        setLabelFloat(objects.label_vento_value, data_meteo.today.windKph, "%.1f km/h");
+        setLabelFloat(objects.label_pressione_value, data_meteo.today.pressureMb, "%.1f hPa");
+        setLabelFloat(objects.label_visibilita_value, data_meteo.today.visKm, "%.1f km");
 
         static lv_obj_t* labels_umid[] = {objects.umidita_day_left_2, objects.umidita_day_left_1,
                                         objects.umidita_day_right_1, objects.umidita_day_right_2};
@@ -82,20 +83,25 @@ void displayUpdateWeather(QueueHandle_t xQueueMeteo) {
                                             objects.icon_day_right_1, objects.icon_day_right_2};
 
         for (int i = 0; i < 4; i++){
-            setLabelFloat(labels_umid[i], data.nextDays[i].humidity,"%.0f%%");
-            setLabelFloat(labels_temp[i], data.nextDays[i].tempMax, "%.0f°");
-            lv_img_set_src(icons_status[i], data.nextDays[i].weatherIcon.icon);
+            setLabelFloat(labels_umid[i], data_meteo.nextDays[i].humidity,"%.0f%%");
+            setLabelFloat(labels_temp[i], data_meteo.nextDays[i].tempMax, "%.0f°");
+            lv_img_set_src(icons_status[i], data_meteo.nextDays[i].weatherIcon.icon);
         }
+    }
+
+    if (xQueueReceive(xQueueDHT, &data_dht, 0) == pdPASS){
+        setLabelFloat(objects.label_temp_stanza_value, data_dht.temp, "%.0f°C");
+        setLabelFloat(objects.label_umid_stanza_value, data_dht.umid, "%.0f%%");
     }
 }
 
 static void displayTask(void* pvParameters)
 {
-    QueueHandle_t queue = (QueueHandle_t) pvParameters;
+    TaskQueues* queues = (TaskQueues*) pvParameters;
     while(1){
         lv_timer_handler();
         displayUpdateDateTime();
-        displayUpdateWeather(queue);
+        displayUpdateWeather(queues->queue_meteo, queues->queue_dht);
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
@@ -105,7 +111,7 @@ static uint32_t my_tick(void)
     return millis();
 }
 
-void displayManagerInit(QueueHandle_t xQueueMeteo){
+void displayManagerInit(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT){
     lv_init();
     lv_tick_set_cb(my_tick);
     tft.begin();
@@ -117,6 +123,9 @@ void displayManagerInit(QueueHandle_t xQueueMeteo){
     }
     disp = lv_tft_espi_create(TFT_HOR_RES, TFT_VER_RES, draw_buf, DRAW_BUF_SIZE / 4 * sizeof(uint32_t));
     ui_init();
+    TaskQueues* queues = new TaskQueues;
+    queues->queue_dht = xQueueDHT;
+    queues->queue_meteo = xQueueMeteo;
 
-    xTaskCreate(displayTask, "DisplayTask", 20480, (void*)xQueueMeteo, 5, NULL);
+    xTaskCreate(displayTask, "DisplayTask", 20480, queues, 5, NULL);
 }

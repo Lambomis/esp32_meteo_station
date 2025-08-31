@@ -1,21 +1,25 @@
 #include "data_types.h"
 #include "weather_manager.h"
 #include "display_manager.h"
+#include "dht_manager.h"
 #include <freertos/queue.h>
 
 QueueHandle_t xQueueMeteo;
+QueueHandle_t xQueueDHT;
 
 void setup()
 {
   Serial.begin(115200);
   xQueueMeteo = xQueueCreate(5, sizeof(WeatherData));
+  xQueueDHT   = xQueueCreate(5, sizeof(DHTData));
   if (xQueueMeteo == NULL) {
     Serial.println("Errore creazione queue!");
     return;
   }
 
   weatherInit(xQueueMeteo);
-  displayManagerInit(xQueueMeteo);
+  displayManagerInit(xQueueMeteo, xQueueDHT);
+  DHTManagerInit(xQueueDHT);
 }
 
 void loop()
