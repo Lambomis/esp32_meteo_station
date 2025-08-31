@@ -40,11 +40,12 @@ WeatherIcon getWeatherIcon(int code, bool isDay) {
     }
 }
 
-bool isDaytime() {
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo)) return true;
-    int hour = timeinfo.tm_hour;
-    return hour >= 6 && hour < 18;
+bool isDaytime(const std::string& icon) {
+    if (!icon.empty()) {
+        char last = icon.back();
+        return last == 'd';
+    }
+    return false;
 }
 
 WeatherData getWeatherData_openmeteo() {
@@ -72,8 +73,7 @@ WeatherData getWeatherData_openmeteo() {
         data.today.tempMax = doc["daily"]["temperature_2m_max"][0];
         data.today.tempMin = doc["daily"]["temperature_2m_min"][0];
         data.today.windKph = doc["current_weather"]["windspeed"];
-        data.today.weatherIcon = getWeatherIcon(doc["current_weather"]["weathercode"], isDaytime());
-
+        data.today.windKph = doc["current_weather"]["weathercode"];
         
         float sumHumidity = 0;
         for (int i = 0; i < 24; i++) sumHumidity += doc["hourly"]["relativehumidity_2m"][i].as<float>();
@@ -112,7 +112,6 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
     if (httpCode == HTTP_CODE_OK) {
 
         String payload = http.getString();
-        Serial.println(payload);
 
         DynamicJsonDocument doc(8*1024);
         deserializeJson(doc, payload);
@@ -120,6 +119,7 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
         // --- Dati di oggi ---
         data.today.windKph    = doc["wind"]["speed"];
         data.today.visKm      = doc["visibility"].as<float>() / 1000.0f;
+        data.today.weatherIcon = getWeatherIcon(data.today.weather_code, isDaytime(doc["wather"]["icon"]));
     } else {
         Serial.printf("Errore HTTP: %d\n", httpCode);
     }

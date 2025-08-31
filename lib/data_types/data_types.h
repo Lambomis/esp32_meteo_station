@@ -17,6 +17,8 @@ typedef struct {
     float windKph;        // Vento km/h
     float pressureMb;     // Pressione in mbar
     float visKm;          // Visibilità in km
+    bool isDay;           // flag se è giorno
+    int weather_code;     // codice stato meteo
     WeatherIcon weatherIcon;   // stato meteo
 } TodayWeather;
 

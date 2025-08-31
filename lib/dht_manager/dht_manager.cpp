@@ -26,7 +26,7 @@ void DHTask(void *pvParameters) {
     QueueHandle_t xQueue = (QueueHandle_t) pvParameters;
     for (;;) {
         getDataFromDHT(xQueue);
-        vTaskDelay(pdMS_TO_TICKS(600000));
+        vTaskDelay(pdMS_TO_TICKS(30000));
     }
 }
 
