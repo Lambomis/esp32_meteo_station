@@ -47,7 +47,6 @@ bool isDaytime() {
     return hour >= 6 && hour < 18;
 }
 
-
 WeatherData getWeatherData_openmeteo() {
     WeatherData data = {0};
     HTTPClient http;
@@ -113,6 +112,7 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
     if (httpCode == HTTP_CODE_OK) {
 
         String payload = http.getString();
+        Serial.println(payload);
 
         DynamicJsonDocument doc(8*1024);
         deserializeJson(doc, payload);

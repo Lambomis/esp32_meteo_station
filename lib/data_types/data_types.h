@@ -4,12 +4,6 @@
 // --- Strutture dati --- //
 
 typedef struct {
-    float latitude;
-    float longitude;
-    String city;
-} Location;
-
-typedef struct {
     const void* icon;
     const char* description;
 } WeatherIcon;
@@ -23,7 +17,6 @@ typedef struct {
     float windKph;        // Vento km/h
     float pressureMb;     // Pressione in mbar
     float visKm;          // Visibilità in km
-    Location loc;
     WeatherIcon weatherIcon;   // stato meteo
 } TodayWeather;
 
