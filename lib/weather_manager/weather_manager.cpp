@@ -64,7 +64,14 @@ WeatherData getWeatherData_openmeteo() {
         String payload = http.getString();
 
         DynamicJsonDocument doc(16*1024);
-        deserializeJson(doc, payload);
+        DeserializationError err = deserializeJson(doc, payload);
+
+        if (err) {
+            Serial.print("Errore parsing JSON: ");
+            Serial.println(err.c_str());
+            data.today.errorCode = WEATHER_JSON_ERROR;
+            return data;
+        }
 
         // --- Dati di oggi ---
 
@@ -73,7 +80,7 @@ WeatherData getWeatherData_openmeteo() {
         data.today.tempMax = doc["daily"]["temperature_2m_max"][0];
         data.today.tempMin = doc["daily"]["temperature_2m_min"][0];
         data.today.windKph = doc["current_weather"]["windspeed"];
-        data.today.windKph = doc["current_weather"]["weathercode"];
+        data.today.weather_code = doc["current_weather"]["weathercode"];
         
         float sumHumidity = 0;
         for (int i = 0; i < 24; i++) sumHumidity += doc["hourly"]["relativehumidity_2m"][i].as<float>();
@@ -92,8 +99,10 @@ WeatherData getWeatherData_openmeteo() {
             }
             data.nextDays[i-1].humidity = sum / 24.0f;
         }
+        data.today.errorCode = WEATHER_NO_ERROR;
 
     } else {
+        data.today.errorCode = WEATHER_HTTP_ERROR;
         Serial.printf("Errore HTTP: %d\n", httpCode);
     }
     http.end();
@@ -114,39 +123,73 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
         String payload = http.getString();
 
         DynamicJsonDocument doc(8*1024);
-        deserializeJson(doc, payload);
+        DeserializationError err = deserializeJson(doc, payload);
+        if (err) {
+            Serial.print("Errore parsing JSON: ");
+            Serial.println(err.c_str());
+            data.today.errorCode = 2;
+            return data;
+        }
 
         // --- Dati di oggi ---
         data.today.windKph    = doc["wind"]["speed"];
         data.today.visKm      = doc["visibility"].as<float>() / 1000.0f;
         data.today.weatherIcon = getWeatherIcon(data.today.weather_code, isDaytime(doc["weather"][0]["icon"].as<String>()));
     } else {
+        if(data.today.errorCode == WEATHER_NO_ERROR) data.today.errorCode = WEATHER_HTTP_ERROR;
         Serial.printf("Errore HTTP: %d\n", httpCode);
     }
     http.end();
     return data;
 }
 
-void getWeatherData(QueueHandle_t xQueueMeteo) {
-    if (WiFi.status() != WL_CONNECTED) return;
+bool checkStatus(WeatherData &data, DeviceState &state){
+    if(data.today.errorCode == WEATHER_HTTP_ERROR){
+        state.state_weather.errorCode = WEATHER_HTTP_ERROR;
+        state.state_weather.description = "HTTP Error.";
+        return false;
+    } else if (data.today.errorCode == WEATHER_JSON_ERROR){
+        state.state_weather.errorCode = WEATHER_JSON_ERROR;
+        state.state_weather.description = "JSON Error.";
+        return false;
+    }
+    state.state_weather.errorCode = WEATHER_NO_ERROR;
+    state.state_weather.description = "OK";
+    return true;
+}
+
+void getWeatherData(QueueHandle_t xQueueMeteo, DeviceState &state) {
+    if (WiFi.status() != WL_CONNECTED){
+        state.state_weather.errorCode = WEATHER_WIFI_ERROR;
+        state.state_weather.description = "WiFi Error.";
+        return;
+    }
     WeatherData data = {0};
     data = getWeatherData_openmeteo();
+    if(!checkStatus(data, state)) return;
     data = getWeatherData_openweather(data);
+    if(!checkStatus(data, state)) return;
+    
     
     if (xQueueSend(xQueueMeteo, &data, portMAX_DELAY) != pdPASS) {
-        Serial.println("Errore invio dati meteo");
+        state.state_weather.errorCode = WEATHER_QUEUE_ERROR;
+        state.state_weather.description = "Queue Send Error.";
+        return;
     }
+
+    state.state_weather.errorCode = WEATHER_NO_ERROR;
+    state.state_weather.description = "OK";
 }
 
 void weatherTask(void *pvParameters) {
-    QueueHandle_t xQueue = (QueueHandle_t) pvParameters;
+    WeatherTaskData* task_data = (WeatherTaskData*) pvParameters; 
     for (;;) {
-        getWeatherData(xQueue);
+        getWeatherData(task_data->queue_meteo, *(task_data->device_state));
         vTaskDelay(pdMS_TO_TICKS(600000));
     }
 }
 
-void weatherInit(QueueHandle_t xQueueMeteo) {
+void weatherInit(QueueHandle_t xQueueMeteo, DeviceState &state) {
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -155,6 +198,10 @@ void weatherInit(QueueHandle_t xQueueMeteo) {
     Serial.println("Wi-Fi connesso");
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
-    xTaskCreate(weatherTask, "WeatherTask", 8192, (void*)xQueueMeteo, 5, NULL);
+    WeatherTaskData* task_data = new WeatherTaskData;
+    task_data->device_state = &state;
+    task_data->queue_meteo = xQueueMeteo;
+
+    xTaskCreate(weatherTask, "WeatherTask", 8192, task_data, 5, NULL);
 }
 

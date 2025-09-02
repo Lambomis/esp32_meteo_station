@@ -41,7 +41,14 @@ typedef struct _objects_t {
     lv_obj_t *label_temp_stanza_value;
     lv_obj_t *label_umid_stanza;
     lv_obj_t *label_umid_stanza_value;
-    lv_obj_t *label_aggiornamento;
+    lv_obj_t *label_aggiornamento_meteo;
+    lv_obj_t *label_aggiornamento_display;
+    lv_obj_t *label_aggiornamento_dht;
+    lv_obj_t *label_agg_meteo;
+    lv_obj_t *label_agg_meteo_value;
+    lv_obj_t *label_meteo_err_value;
+    lv_obj_t *label_display_err_value;
+    lv_obj_t *label_dht11_err_value;
     lv_obj_t *panel_umid;
     lv_obj_t *label_umid_current;
     lv_obj_t *icon_umid;

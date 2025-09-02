@@ -17,7 +17,7 @@ static void my_disp_flush(lv_display_t *display, const lv_area_t *area, uint8_t 
     lv_disp_flush_ready(display);
 }
 
-void displayUpdateDateTime(){
+bool displayUpdateDateTime(){
     struct tm timeinfo;
     if (getLocalTime(&timeinfo)) {
         // Aggiorna orario
@@ -47,13 +47,24 @@ void displayUpdateDateTime(){
             sprintf(nextDayStr, "%02d", nextDay.tm_mday); // solo numero giorno
             lv_label_set_text(labels[i], nextDayStr);
         }
+        return true;
     }
+    return false;
 }
 
 void setLabelFloat(lv_obj_t* label, float value, const char* fmt = "%.1f") {
     static char buf[32];
     snprintf(buf, sizeof(buf), fmt, value);
     lv_label_set_text(label, buf);
+}
+
+void changeLastUpdateLabel(){
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo)) {
+        char buf[16];
+        strftime(buf, sizeof(buf), "%H:%M:%S", &timeinfo);
+        lv_label_set_text(objects.label_agg_meteo_value, buf);
+    }
 }
 
 
@@ -87,21 +98,32 @@ void displayUpdateWeather(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT) {
             setLabelFloat(labels_temp[i], data_meteo.nextDays[i].tempMax, "%.0f°");
             lv_img_set_src(icons_status[i], data_meteo.nextDays[i].weatherIcon.icon);
         }
+        changeLastUpdateLabel();
     }
 
     if (xQueueReceive(xQueueDHT, &data_dht, 0) == pdPASS){
         setLabelFloat(objects.label_temp_stanza_value, data_dht.temp, "%.0f°C");
         setLabelFloat(objects.label_umid_stanza_value, data_dht.umid, "%.0f%%");
     }
+
 }
 
 static void displayTask(void* pvParameters)
 {
-    TaskQueues* queues = (TaskQueues*) pvParameters;
+    DisplayTaskData* task_data = (DisplayTaskData*) pvParameters;
     while(1){
         lv_timer_handler();
-        displayUpdateDateTime();
-        displayUpdateWeather(queues->queue_meteo, queues->queue_dht);
+        if(!displayUpdateDateTime()) {
+            task_data->state->state_display.errorCode = DISPLAY_DT_ERROR;
+            task_data->state->state_display.description = "Update DT Error.";
+        } else {
+            task_data->state->state_display.errorCode = DISPLAY_NO_ERROR;
+            task_data->state->state_display.description = "OK";
+        }
+        displayUpdateWeather(task_data->queue_meteo, task_data->queue_dht);
+        lv_label_set_text(objects.label_display_err_value, task_data->state->state_display.description.c_str());
+        lv_label_set_text(objects.label_meteo_err_value, task_data->state->state_weather.description.c_str());
+        lv_label_set_text(objects.label_dht11_err_value, task_data->state->state_dht11.description.c_str());
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
@@ -111,7 +133,7 @@ static uint32_t my_tick(void)
     return millis();
 }
 
-void displayManagerInit(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT){
+void displayManagerInit(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT, DeviceState &state){
     lv_init();
     lv_tick_set_cb(my_tick);
     tft.begin();
@@ -123,9 +145,10 @@ void displayManagerInit(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT){
     }
     disp = lv_tft_espi_create(TFT_HOR_RES, TFT_VER_RES, draw_buf, DRAW_BUF_SIZE / 4 * sizeof(uint32_t));
     ui_init();
-    TaskQueues* queues = new TaskQueues;
-    queues->queue_dht = xQueueDHT;
-    queues->queue_meteo = xQueueMeteo;
+    DisplayTaskData* task_data = new DisplayTaskData;
+    task_data->queue_dht = xQueueDHT;
+    task_data->queue_meteo = xQueueMeteo;
+    task_data->state = &state;
 
-    xTaskCreate(displayTask, "DisplayTask", 20480, queues, 5, NULL);
+    xTaskCreate(displayTask, "DisplayTask", 20480, task_data, 5, NULL);
 }

@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "lvgl.h": "c",
-        "screens.h": "c"
+        "screens.h": "c",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "new": "cpp"
     }
 }

@@ -6,6 +6,7 @@
 
 QueueHandle_t xQueueMeteo;
 QueueHandle_t xQueueDHT;
+DeviceState state;
 
 void setup()
 {
@@ -17,9 +18,9 @@ void setup()
     return;
   }
 
-  weatherInit(xQueueMeteo);
-  displayManagerInit(xQueueMeteo, xQueueDHT);
-  DHTManagerInit(xQueueDHT);
+  weatherInit(xQueueMeteo, state);
+  displayManagerInit(xQueueMeteo, xQueueDHT, state);
+  DHTManagerInit(xQueueDHT, state);
 }
 
 void loop()

@@ -9,5 +9,17 @@
 #define DHTTYPE DHT11
 
 extern QueueHandle_t xQueueDHT;
+extern DeviceState state;
 
-void DHTManagerInit(QueueHandle_t xQueueDHT);
+typedef struct {
+    QueueHandle_t queue_dht;
+    DeviceState* state;
+} DHTTaskData;
+
+enum DHTErrors {
+    DHT_NO_ERROR = 0,
+    DHT_QUEUE_ERROR = 1,
+    DHT_ERROR = 2,
+};
+
+void DHTManagerInit(QueueHandle_t xQueueDHT, DeviceState &state);

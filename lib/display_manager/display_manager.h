@@ -22,11 +22,18 @@ extern TFT_eSPI tft;
 // --- Variabili globali (visibili agli altri moduli) --- // 
 extern QueueHandle_t xQueueMeteo;
 extern QueueHandle_t xQueueDHT;
+extern DeviceState state;
 typedef struct {
     QueueHandle_t queue_meteo;
     QueueHandle_t queue_dht;
-} TaskQueues;
+    DeviceState* state;
+} DisplayTaskData;
+
+enum DisplayErrors {
+    DISPLAY_NO_ERROR = 0,
+    DISPLAY_DT_ERROR = 1,
+};
 
 
 // --- API pubbliche --- //
-void displayManagerInit(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT); // Inizializza display e LVGL, avvia il task display
+void displayManagerInit(QueueHandle_t xQueueMeteo, QueueHandle_t xQueueDHT, DeviceState &state); // Inizializza display e LVGL, avvia il task display

@@ -315,7 +315,7 @@ void create_screen_main() {
                     // label_temp_stanza
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_temp_stanza = obj;
-                    lv_obj_set_pos(obj, 0, -5);
+                    lv_obj_set_pos(obj, -4, -10);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -325,7 +325,7 @@ void create_screen_main() {
                     // label_temp_stanza_value
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_temp_stanza_value = obj;
-                    lv_obj_set_pos(obj, 66, -5);
+                    lv_obj_set_pos(obj, 59, -10);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -335,7 +335,7 @@ void create_screen_main() {
                     // label_umid_stanza
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_umid_stanza = obj;
-                    lv_obj_set_pos(obj, 113, -5);
+                    lv_obj_set_pos(obj, -4, 0);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -345,21 +345,91 @@ void create_screen_main() {
                     // label_umid_stanza_value
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.label_umid_stanza_value = obj;
-                    lv_obj_set_pos(obj, 178, -5);
+                    lv_obj_set_pos(obj, 59, 0);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text(obj, "000%");
                 }
                 {
-                    // label_aggiornamento
+                    // label_aggiornamento_meteo
                     lv_obj_t *obj = lv_label_create(parent_obj);
-                    objects.label_aggiornamento = obj;
-                    lv_obj_set_pos(obj, 12, 10);
+                    objects.label_aggiornamento_meteo = obj;
+                    lv_obj_set_pos(obj, 103, -10);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "Ultimo aggiornamento: 00:00:00 (Successo)");
+                    lv_label_set_text(obj, "Meteo:");
+                }
+                {
+                    // label_aggiornamento_display
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_aggiornamento_display = obj;
+                    lv_obj_set_pos(obj, 103, 0);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "Display:");
+                }
+                {
+                    // label_aggiornamento_dht
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_aggiornamento_dht = obj;
+                    lv_obj_set_pos(obj, 104, 10);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "DHT11:");
+                }
+                {
+                    // label_agg_meteo
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_agg_meteo = obj;
+                    lv_obj_set_pos(obj, -4, 10);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "Agg. Meteo:");
+                }
+                {
+                    // label_agg_meteo_value
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_agg_meteo_value = obj;
+                    lv_obj_set_pos(obj, 59, 10);
+                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "00:00:00");
+                }
+                {
+                    // label_meteo_err_value
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_meteo_err_value = obj;
+                    lv_obj_set_pos(obj, 138, -10);
+                    lv_obj_set_size(obj, 72, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "OK");
+                }
+                {
+                    // label_display_err_value
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_display_err_value = obj;
+                    lv_obj_set_pos(obj, 138, 0);
+                    lv_obj_set_size(obj, 72, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "OK");
+                }
+                {
+                    // label_dht11_err_value
+                    lv_obj_t *obj = lv_label_create(parent_obj);
+                    objects.label_dht11_err_value = obj;
+                    lv_obj_set_pos(obj, 138, 10);
+                    lv_obj_set_size(obj, 72, LV_SIZE_CONTENT);
+                    lv_obj_set_style_text_color(obj, lv_color_hex(0xfffefefe), LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_8, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_label_set_text(obj, "OK");
                 }
             }
         }
@@ -512,7 +582,7 @@ void create_screen_main() {
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_color(obj, lv_color_hex(0xffffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "Milano");
+                    lv_label_set_text(obj, "CIty");
                 }
                 {
                     // label_orario
