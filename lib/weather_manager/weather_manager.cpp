@@ -40,9 +40,9 @@ WeatherIcon getWeatherIcon(int code, bool isDay) {
     }
 }
 
-bool isDaytime(const std::string& icon) {
-    if (!icon.empty()) {
-        char last = icon.back();
+bool isDaytime(const String& icon) {
+    if (icon.length() > 0) {
+        char last = icon.charAt(icon.length() - 1);
         return last == 'd';
     }
     return false;
@@ -119,7 +119,7 @@ WeatherData getWeatherData_openweather(WeatherData &data) {
         // --- Dati di oggi ---
         data.today.windKph    = doc["wind"]["speed"];
         data.today.visKm      = doc["visibility"].as<float>() / 1000.0f;
-        data.today.weatherIcon = getWeatherIcon(data.today.weather_code, isDaytime(doc["wather"]["icon"]));
+        data.today.weatherIcon = getWeatherIcon(data.today.weather_code, isDaytime(doc["weather"][0]["icon"].as<String>()));
     } else {
         Serial.printf("Errore HTTP: %d\n", httpCode);
     }
